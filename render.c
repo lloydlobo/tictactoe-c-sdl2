@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
-#include <assert.h>
-#include <stddef.h>
+#include <SDL2/SDL2_gfxPrimitives.h>  // Used for thickLineRGBA(...).
+#include <math.h>
 
 #include "game.h"
 #include "render.h"
@@ -10,12 +10,14 @@
 // Procedures: how to render grid and render board.
 // We don't think in states here.
 
-#define COLOR_ALPHA 255  // Magic constant used in `SDL_SetRenderDrawColor`.
+#define COLOR_ALPHA       255  // Magic constant used in `SDL_SetRenderDrawColor`.
+#define XO_LINE_THICKNESS 10  // Line thickness of crosses and zeroes.
 
 const SDL_Color GRID_COLOR     = {.r = 255, .g = 255, .b = 255};  // White.
 const SDL_Color PLAYER_X_COLOR = {.r = 255, .g = 50, .b = 50};    // Red.
 const SDL_Color PLAYER_O_COLOR = {.r = 50, .g = 100, .b = 255};   // Blue.
 const SDL_Color TIE_COLOR      = {.r = 100, .g = 100, .b = 100};  // Gray.
+const SDL_Color BG_COLOR       = {.r = 0, .g = 0, .b = 0};        // Black.
 
 static void render_grid(SDL_Renderer *renderer, const SDL_Color *color) {
     SDL_SetRenderDrawColor(renderer, color->r, color->g, color->b, COLOR_ALPHA);
@@ -28,17 +30,60 @@ static void render_grid(SDL_Renderer *renderer, const SDL_Color *color) {
     }
 }
 
-// static void render_x_cell() {}
-// static void render_o_cell() {}
+// TODO: Draw a cross
+static void render_x_cell(SDL_Renderer *renderer, size_t row, size_t col,
+                          const SDL_Color *color) {
+    const float half_block_side = (fmin(CELL_WIDTH, CELL_HEIGHT) * 0.25);
+    const float center_x        = (CELL_WIDTH * 0.5) + (col * CELL_WIDTH);
+    const float center_y        = (CELL_HEIGHT * 0.5) + (row * CELL_HEIGHT);
+
+    thickLineRGBA(renderer, center_x - half_block_side,
+                  center_y - half_block_side, center_x + half_block_side,
+                  center_y + half_block_side, XO_LINE_THICKNESS, color->r,
+                  color->g, color->b, COLOR_ALPHA);  // Draw `\`.
+    thickLineRGBA(renderer, center_x + half_block_side,
+                  center_y - half_block_side, center_x - half_block_side,
+                  center_y + half_block_side, XO_LINE_THICKNESS, color->r,
+                  color->g, color->b, COLOR_ALPHA);  // Draw `/`.
+}
+
+// TODO: Draw a circle ring
+static void render_o_cell(SDL_Renderer *renderer, size_t row, size_t col,
+                          const SDL_Color *color) {
+    const float half_block_side = (fmin(CELL_WIDTH, CELL_HEIGHT) * 0.25);
+    const float center_x        = (CELL_WIDTH * 0.5) + (col * CELL_WIDTH);
+    const float center_y        = (CELL_HEIGHT * 0.5) + (row * CELL_HEIGHT);
+
+    filledCircleRGBA(renderer, center_x, center_y, half_block_side, color->r,
+                     color->g, color->b, COLOR_ALPHA);  // Draw solid O.
+    filledCircleRGBA(renderer, center_x, center_y,
+                     (half_block_side - XO_LINE_THICKNESS), BG_COLOR.r,
+                     BG_COLOR.g, BG_COLOR.b, COLOR_ALPHA);  // Draw mask o.
+}
 
 static void render_board(SDL_Renderer *renderer, const int *board,
                          const SDL_Color *player_x_color,
-                         const SDL_Color *player_y_color) {}
+                         const SDL_Color *player_o_color) {
+    for (size_t i = 0; i < N_GRID; ++i) {
+        for (size_t j = 0; j < N_GRID; ++j) {
+            switch (board[i * N_GRID + j]) {
+            case CELL_PLAYER_X:  // 1.
+                render_x_cell(renderer, i, j, player_x_color);
+                break;
+            case CELL_PLAYER_O:  // 2.
+                render_o_cell(renderer, i, j, player_o_color);
+                break;
+            default: {
+            }
+            }
+        }
+    }
+}
 
 static void render_game_over_state(SDL_Renderer      *renderer,
                                    const struct Game *game,
                                    const SDL_Color   *color) {
-    render_grid(renderer, &GRID_COLOR);
+    render_grid(renderer, color);
     render_board(renderer, game->board, color, color);
 }
 

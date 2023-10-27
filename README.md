@@ -17,7 +17,17 @@ make
 
 See `SDL2` installation resources for [Supported Platform](https://wiki.libsdl.org/SDL2/Installation#supported_platforms).
 
+### Debian-based systems
+
 ```shell
-sudo apt-get install libsdl2-dev  # Debian-based systems
-sudo dnf install SDL2-devel 	  # Red Hat-based systems
+sudo apt-get install libsdl2 libsdl2-dev
+sudo apt-get install libsdl2-gfx0.1-5
+sudo apt-get install libsdl2-gfx-dev
+```
+
+### Red Hat-based systems
+
+```shell
+sudo dnf install SDL2 SDL2-devel
+sudo dnf install SDL2_gfx SDL2_gfx-devel
 ```

@@ -24,9 +24,9 @@ enum Game_State {  // Enumeration of each states of the game.
 };
 
 struct Game {
-    int board[N_GRID * N_GRID];
-    int player;
-    int state;
+    int             board[N_GRID * N_GRID];
+    int             player;
+    enum Game_State state;
 };
 
 #endif  // GAME_H_

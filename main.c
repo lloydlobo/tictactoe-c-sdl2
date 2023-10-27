@@ -37,9 +37,9 @@ int main(int argc, char *argv[]) {
 
     struct Game game = {
         .board  =  // clang-format off
-            { CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,
-              CELL_EMPTY, CELL_EMPTY, CELL_EMPTY,
-              CELL_EMPTY, CELL_EMPTY, CELL_EMPTY, },  // clang-format on
+            { CELL_PLAYER_X, CELL_EMPTY, CELL_EMPTY,
+              CELL_EMPTY, CELL_PLAYER_O, CELL_EMPTY,
+              CELL_PLAYER_O, CELL_EMPTY, CELL_PLAYER_X, },  // clang-format on
         .player = CELL_PLAYER_X,
         .state  = GAME_STATE_RUNNING,
     };
