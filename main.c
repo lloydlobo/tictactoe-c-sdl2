@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 
 #include "game.h"
+#include "logic.h"
+#include "render.h"
 
 /// Main entrypoint of the game.
 
@@ -50,15 +52,20 @@ int main(int argc, char *argv[]) {
             switch (e.type) {
             // case SDL_QUIT: quit = 1; break;
             case SDL_QUIT: game.state = GAME_STATE_QUIT; break;
+            case SDL_MOUSEBUTTONDOWN: {
+                int row = e.button.y / CELL_HEIGHT,
+                    col = e.button.x / CELL_WIDTH;
+                click_on_cell(&game, row, col);
+                break;
+            }
             default: {
             }
-            }  // _end: switch
+            }  // switch
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Set to black.
-        SDL_RenderClear(renderer);  // Clear the current rendering target with
-                                    // the drawing color.
-        // render_game(renderer, &game); // TODO
+        SDL_RenderClear(renderer);  // Clears the entire rendering target.
+        render_game(renderer, &game);
         SDL_RenderPresent(renderer);  // Update the screen with any rendering
                                       // performed since the previous call.
     }

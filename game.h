@@ -3,9 +3,11 @@
 
 /// Global constants and variables for game.
 
-#define N_GRID        3    // Number of each rows & columns.
-#define SCREEN_WIDTH  640  // Width of window.
-#define SCREEN_HEIGHT 480  // Height of window.
+#define N_GRID        3                        // Number of each rows & columns.
+#define SCREEN_WIDTH  640                      // Width of window.
+#define SCREEN_HEIGHT 480                      // Height of window.
+#define CELL_WIDTH    (SCREEN_WIDTH / N_GRID)  // (float)
+#define CELL_HEIGHT   (SCREEN_HEIGHT / N_GRID)  // (float)
 
 enum Cell_State {  // Each sub-grid can be either "empty" or have one player.
     CELL_EMPTY    = 0,
