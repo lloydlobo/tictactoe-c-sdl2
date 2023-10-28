@@ -2,6 +2,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>  // Used for thickLineRGBA(...).
 #include <math.h>
 
+#include "font.h"
 #include "game.h"
 #include "render.h"
 
@@ -18,6 +19,7 @@ const SDL_Color PLAYER_X_COLOR = {.r = 255, .g = 50, .b = 50};    // Red.
 const SDL_Color PLAYER_O_COLOR = {.r = 50, .g = 100, .b = 255};   // Blue.
 const SDL_Color TIE_COLOR      = {.r = 100, .g = 100, .b = 100};  // Gray.
 const SDL_Color BG_COLOR       = {.r = 0, .g = 0, .b = 0};        // Black.
+const SDL_Color WIN_COLOR      = {.r = 255, .g = 215, .b = 0};    // status.
 
 static void render_grid(SDL_Renderer *renderer, const SDL_Color *color) {
     SDL_SetRenderDrawColor(renderer, color->r, color->g, color->b, COLOR_ALPHA);
@@ -30,7 +32,6 @@ static void render_grid(SDL_Renderer *renderer, const SDL_Color *color) {
     }
 }
 
-// TODO: Draw a cross
 static void render_x_cell(SDL_Renderer *renderer, size_t row, size_t col,
                           const SDL_Color *color) {
     const float half_block_side = (fmin(CELL_WIDTH, CELL_HEIGHT) * 0.25);
@@ -47,7 +48,6 @@ static void render_x_cell(SDL_Renderer *renderer, size_t row, size_t col,
                   color->g, color->b, COLOR_ALPHA);  // Draw `/`.
 }
 
-// TODO: Draw a circle ring
 static void render_o_cell(SDL_Renderer *renderer, size_t row, size_t col,
                           const SDL_Color *color) {
     const float half_block_side = (fmin(CELL_WIDTH, CELL_HEIGHT) * 0.25);
@@ -110,4 +110,43 @@ void render_game(SDL_Renderer *renderer, const struct Game *game) {  //
     default: {
     }
     }
+}
+
+// Render status bar below board; where extra space is reserved in game window.
+void render_status_bar(SDL_Renderer *renderer, size_t height,
+                       const struct Game *game, TTF_Font *font) {
+    SDL_Rect status_bar_rect = {0, SCREEN_HEIGHT, SCREEN_WIDTH, height};
+    SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+    SDL_RenderFillRect(renderer, &status_bar_rect);
+
+    SDL_Color fg;
+    char     *indicator;
+
+    indicator = game->player == CELL_PLAYER_X ? "X" : "O";
+
+    switch (game->state) {
+    case GAME_STATE_RUNNING:
+        fg = game->player == CELL_PLAYER_X ? PLAYER_X_COLOR : PLAYER_O_COLOR;
+        break;
+    case GAME_STATE_PLAYER_X_WON:
+        indicator = "X";
+        fg        = WIN_COLOR;
+        break;
+    case GAME_STATE_PLAYER_O_WON:
+        indicator = "O";
+        fg        = WIN_COLOR;
+        break;
+    case GAME_STATE_TIE:
+        fg        = TIE_COLOR;
+        indicator = "-";
+        break;
+    case GAME_STATE_QUIT:
+        indicator = " ";
+        fg        = BG_COLOR;
+        break;
+    default: {
+    }
+    }
+
+    display_text(renderer, indicator, font, fg, (8), (SCREEN_HEIGHT));
 }

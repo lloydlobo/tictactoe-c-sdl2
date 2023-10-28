@@ -50,20 +50,6 @@ void game_over_condition(struct Game *game) {
     }
 }
 
-// void game_over_condition(struct Game *game) {
-//     bool   is_game_over = false;
-//     size_t count_empty  = 0;
-//     size_t count_x      = 0;
-//     size_t count_o      = 0;
-//     for (size_t i = 0, n = N_GRID * N_GRID; i < n; i++) {
-//         if (game->board[i] == CELL_EMPTY) { count_empty += 1; }
-//         if (game->board[i] == CELL_PLAYER_X) { count_x += 1; }
-//         if (game->board[i] == CELL_PLAYER_O) { count_o += 1; }
-//     }
-//     if (count_x == count_o) game->state = GAME_STATE_TIE;
-//     if (count_empty == 0) game->state = GAME_STATE_QUIT;
-// };
-
 static void player_turn(struct Game *game, int row, int col) {
     if (game->board[row * N_GRID + col] == CELL_EMPTY) {
         game->board[row * N_GRID + col] = game->player;
